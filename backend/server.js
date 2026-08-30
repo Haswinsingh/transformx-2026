@@ -11,10 +11,18 @@ import { generateRegistrationEmail } from "./emailTemplate.js";
 dotenv.config();
 
 const app = express();
-const allowedOrigins = process.env.FRONTEND_URL 
-  ? [process.env.FRONTEND_URL, "http://localhost:5173", "http://localhost:3000"] 
+const frontendUrl = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/+$/, "") : null;
+const allowedOrigins = frontendUrl 
+  ? [frontendUrl, "http://localhost:5173", "http://localhost:3000"] 
   : "*";
-app.use(cors({ origin: allowedOrigins }));
+
+app.use(cors({ 
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+  optionsSuccessStatus: 200
+}));
 app.use(express.json());
 
 // Set up secure file storage for PPT uploads
