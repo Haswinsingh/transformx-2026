@@ -11,7 +11,10 @@ import { generateRegistrationEmail } from "./emailTemplate.js";
 dotenv.config();
 
 const app = express();
-app.use(cors({ origin: "*" }));
+const allowedOrigins = process.env.FRONTEND_URL 
+  ? [process.env.FRONTEND_URL, "http://localhost:5173", "http://localhost:3000"] 
+  : "*";
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 // Set up secure file storage for PPT uploads
@@ -361,5 +364,9 @@ app.post("/register", upload.single("ppt"), async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
+
+export default app;
